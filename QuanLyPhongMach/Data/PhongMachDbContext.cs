@@ -26,6 +26,13 @@ namespace QuanLyPhongMach.Data
         //NHẬT KÝ HỆ THỐNG
         public DbSet<NhatKyHeThong> NhatKyHeThongs { get; set; }
 
+        //THUỐC VÀ DỊCH VỤ
+        public DbSet<Thuoc> Thuocs { get; set; }
+        public DbSet<DichVu> DichVus { get; set; }
+        public DbSet<ChiTietDonThuoc> ChiTietDonThuocs { get; set; }
+        public DbSet<ChiTietDichVu> ChiTietDichVus { get; set; }
+
+
         //CẤU HÌNH BỔ SUNG
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

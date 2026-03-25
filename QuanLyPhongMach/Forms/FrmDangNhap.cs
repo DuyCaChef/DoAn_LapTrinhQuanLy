@@ -57,7 +57,7 @@ namespace QuanLyPhongMach.Forms
                 return;
             }
             //Tai khoan ADMIN co dinh
-            if (username == "admin@gmail.com" && rawPassword == "admin123")
+            if (username == "admin@gmail.com" && rawPassword == "admin@123")
             {
                 TaiKhoan adminUser = new TaiKhoan
                 {

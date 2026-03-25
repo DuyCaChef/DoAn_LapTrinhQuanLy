@@ -103,6 +103,16 @@ namespace QuanLyPhongMach.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap medicine {
+            get {
+                object obj = ResourceManager.GetObject("medicine", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap patient {
             get {
                 object obj = ResourceManager.GetObject("patient", resourceCulture);
@@ -116,6 +126,16 @@ namespace QuanLyPhongMach.Properties {
         internal static System.Drawing.Bitmap pay {
             get {
                 object obj = ResourceManager.GetObject("pay", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap service {
+            get {
+                object obj = ResourceManager.GetObject("service", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -37,6 +37,9 @@
             mnuQuanLyBacSi = new ToolStripMenuItem();
             mnuQuanLyNhanVien = new ToolStripMenuItem();
             mnuQuanLyKhachHang = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
+            mnuQuanLyThuoc = new ToolStripMenuItem();
+            mnuQuanLyDichVu = new ToolStripMenuItem();
             mnuNghiepVu = new ToolStripMenuItem();
             mnuTiepNhan = new ToolStripMenuItem();
             mnuKhamBenh = new ToolStripMenuItem();
@@ -49,7 +52,9 @@
             tsbDatLich = new ToolStripButton();
             tsbKhamBenh = new ToolStripButton();
             tsbThanhToan = new ToolStripButton();
-            toolStripButton5 = new ToolStripButton();
+            tsbThuoc = new ToolStripButton();
+            tsbDichVu = new ToolStripButton();
+            tsbDangXuat = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             lblCurrentUser = new ToolStripStatusLabel();
             lblStatus = new ToolStripStatusLabel();
@@ -98,25 +103,25 @@
             // mnuDangNhap
             // 
             mnuDangNhap.Name = "mnuDangNhap";
-            mnuDangNhap.Size = new Size(270, 36);
+            mnuDangNhap.Size = new Size(210, 36);
             mnuDangNhap.Text = "Đăng nhập";
             // 
             // mnuDangXuat
             // 
             mnuDangXuat.Name = "mnuDangXuat";
-            mnuDangXuat.Size = new Size(270, 36);
+            mnuDangXuat.Size = new Size(210, 36);
             mnuDangXuat.Text = "Đăng xuất";
             mnuDangXuat.Click += mnuDangXuat_Click;
             // 
             // mnuThoat
             // 
             mnuThoat.Name = "mnuThoat";
-            mnuThoat.Size = new Size(270, 36);
+            mnuThoat.Size = new Size(210, 36);
             mnuThoat.Text = "Thoát";
             // 
             // mnuQuanLy
             // 
-            mnuQuanLy.DropDownItems.AddRange(new ToolStripItem[] { mnuQuanLyBacSi, mnuQuanLyNhanVien, mnuQuanLyKhachHang });
+            mnuQuanLy.DropDownItems.AddRange(new ToolStripItem[] { mnuQuanLyBacSi, mnuQuanLyNhanVien, mnuQuanLyKhachHang, toolStripSeparator2, mnuQuanLyThuoc, mnuQuanLyDichVu });
             mnuQuanLy.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             mnuQuanLy.Name = "mnuQuanLy";
             mnuQuanLy.Size = new Size(95, 32);
@@ -139,6 +144,23 @@
             mnuQuanLyKhachHang.Name = "mnuQuanLyKhachHang";
             mnuQuanLyKhachHang.Size = new Size(286, 36);
             mnuQuanLyKhachHang.Text = "Quản lý khách hàng";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(283, 6);
+            // 
+            // mnuQuanLyThuoc
+            // 
+            mnuQuanLyThuoc.Name = "mnuQuanLyThuoc";
+            mnuQuanLyThuoc.Size = new Size(286, 36);
+            mnuQuanLyThuoc.Text = "Quản lý thuốc";
+            // 
+            // mnuQuanLyDichVu
+            // 
+            mnuQuanLyDichVu.Name = "mnuQuanLyDichVu";
+            mnuQuanLyDichVu.Size = new Size(286, 36);
+            mnuQuanLyDichVu.Text = "Quản lý dịch vụ";
             // 
             // mnuNghiepVu
             // 
@@ -189,7 +211,7 @@
             // 
             toolStrip1.AutoSize = false;
             toolStrip1.ImageScalingSize = new Size(32, 32);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbTiepNhan, tsbDatLich, tsbKhamBenh, tsbThanhToan, toolStripButton5 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbTiepNhan, tsbDatLich, tsbKhamBenh, tsbThanhToan, tsbThuoc, tsbDichVu, tsbDangXuat });
             toolStrip1.Location = new Point(0, 36);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1898, 80);
@@ -237,18 +259,40 @@
             tsbThanhToan.Text = "Thanh toán";
             tsbThanhToan.TextImageRelation = TextImageRelation.ImageAboveText;
             // 
-            // toolStripButton5
+            // tsbThuoc
             // 
-            toolStripButton5.Alignment = ToolStripItemAlignment.Right;
-            toolStripButton5.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            toolStripButton5.ForeColor = Color.IndianRed;
-            toolStripButton5.Image = Properties.Resources.logout;
-            toolStripButton5.ImageTransparentColor = Color.Magenta;
-            toolStripButton5.Name = "toolStripButton5";
-            toolStripButton5.Size = new Size(105, 75);
-            toolStripButton5.Text = "Đăng xuất";
-            toolStripButton5.TextImageRelation = TextImageRelation.ImageAboveText;
-            toolStripButton5.Click += toolStripButton5_Click;
+            tsbThuoc.AutoSize = false;
+            tsbThuoc.Image = Properties.Resources.medicine;
+            tsbThuoc.ImageTransparentColor = Color.Magenta;
+            tsbThuoc.Name = "tsbThuoc";
+            tsbThuoc.Size = new Size(114, 75);
+            tsbThuoc.Text = "Thuốc";
+            tsbThuoc.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbThuoc.Click += tsbThuoc_Click;
+            // 
+            // tsbDichVu
+            // 
+            tsbDichVu.AutoSize = false;
+            tsbDichVu.Image = Properties.Resources.service;
+            tsbDichVu.ImageTransparentColor = Color.Magenta;
+            tsbDichVu.Name = "tsbDichVu";
+            tsbDichVu.Size = new Size(114, 75);
+            tsbDichVu.Text = "Dịch Vụ";
+            tsbDichVu.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbDichVu.Click += tsbDichVu_Click;
+            // 
+            // tsbDangXuat
+            // 
+            tsbDangXuat.Alignment = ToolStripItemAlignment.Right;
+            tsbDangXuat.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tsbDangXuat.ForeColor = Color.IndianRed;
+            tsbDangXuat.Image = Properties.Resources.logout;
+            tsbDangXuat.ImageTransparentColor = Color.Magenta;
+            tsbDangXuat.Name = "tsbDangXuat";
+            tsbDangXuat.Size = new Size(105, 75);
+            tsbDangXuat.Text = "Đăng xuất";
+            tsbDangXuat.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbDangXuat.Click += tsbDangXuat_Click;
             // 
             // statusStrip1
             // 
@@ -488,7 +532,7 @@
         private ToolStripButton tsbDatLich;
         private ToolStripButton tsbKhamBenh;
         private ToolStripButton tsbThanhToan;
-        private ToolStripButton toolStripButton5;
+        private ToolStripButton tsbDangXuat;
         private Panel pnlDashboard;
         private Label label1;
         private Panel pnlBenhNhanCho;
@@ -508,5 +552,10 @@
         private ToolStripMenuItem mnuAdmin;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem mnuThongTinKhachHang;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem mnuQuanLyThuoc;
+        private ToolStripMenuItem mnuQuanLyDichVu;
+        private ToolStripButton tsbThuoc;
+        private ToolStripButton tsbDichVu;
     }
 }

@@ -53,7 +53,8 @@ namespace QuanLyPhongMach.Forms
 
             string vaiTro = currentUser.VaiTro.Trim().ToUpper();
 
-            if (currentUser.VaiTro == "ADMIN")
+            // Đổi thành Contains("ADMIN") cho đồng bộ và chống lỗi khoảng trắng ngầm
+            if (vaiTro.Contains("ADMIN"))
             {
                 mnuQuanLyBacSi.Visible = true;
                 mnuQuanLyNhanVien.Visible = true;
@@ -69,11 +70,19 @@ namespace QuanLyPhongMach.Forms
                 // Mở Menu cha
                 mnuQuanLy.Visible = true;
 
+                //Menu Thuốc & Dịch vụ
+                if (mnuQuanLyThuoc != null) mnuQuanLyThuoc.Visible = true;
+                if (mnuQuanLyDichVu != null) mnuQuanLyDichVu.Visible = true;
+
                 //Các nút icon to
                 tsbTiepNhan.Visible = true;
                 tsbDatLich.Visible = true;
                 tsbKhamBenh.Visible = true;
                 tsbThanhToan.Visible = true;
+
+                // Toolstrip Thuốc & Dịch vụ
+                if (tsbThuoc != null) tsbThuoc.Visible = true;
+                if (tsbDichVu != null) tsbDichVu.Visible = true;
             }
             else if (vaiTro.Contains("BAC") || vaiTro.Contains("BÁC"))
             {
@@ -91,11 +100,19 @@ namespace QuanLyPhongMach.Forms
                 //Ẩn Menu cha Quản lý vì Bác sĩ không xài gì trong này
                 mnuQuanLy.Visible = false;
 
+                //Menu Thuốc & Dịch vụ (Bác sĩ được quyền truy cập)
+                if (mnuQuanLyThuoc != null) mnuQuanLyThuoc.Visible = true;
+                if (mnuQuanLyDichVu != null) mnuQuanLyDichVu.Visible = true;
+
                 //Các nút icon to
                 tsbTiepNhan.Visible = false;
                 tsbDatLich.Visible = false;
                 tsbKhamBenh.Visible = true;
                 tsbThanhToan.Visible = false;
+
+                //Toolstrip Thuốc & Dịch vụ
+                if (tsbThuoc != null) tsbThuoc.Visible = true;
+                if (tsbDichVu != null) tsbDichVu.Visible = true;
             }
             else if (vaiTro.Contains("NHAN") || vaiTro.Contains("NHÂN"))
             {
@@ -113,11 +130,19 @@ namespace QuanLyPhongMach.Forms
                 // Ẩn Menu cha Quản lý
                 mnuQuanLy.Visible = false;
 
+                //Menu Thuốc & Dịch vụ (Lễ tân được quyền truy cập)
+                if (mnuQuanLyThuoc != null) mnuQuanLyThuoc.Visible = true;
+                if (mnuQuanLyDichVu != null) mnuQuanLyDichVu.Visible = true;
+
                 //Các nút icon to
                 tsbTiepNhan.Visible = true;
                 tsbDatLich.Visible = false;
                 tsbKhamBenh.Visible = false;
                 tsbThanhToan.Visible = true;
+
+                //Toolstrip Thuốc & Dịch vụ
+                if (tsbThuoc != null) tsbThuoc.Visible = true;
+                if (tsbDichVu != null) tsbDichVu.Visible = true;
             }
             else if (vaiTro.Contains("KHACH") || vaiTro.Contains("KHÁCH"))
             {
@@ -135,12 +160,19 @@ namespace QuanLyPhongMach.Forms
                 // Ẩn Menu cha Quản lý
                 mnuQuanLy.Visible = false;
 
+                //Menu Thuốc & Dịch vụ (Khách hàng KHÔNG được truy cập)
+                if (mnuQuanLyThuoc != null) mnuQuanLyThuoc.Visible = false;
+                if (mnuQuanLyDichVu != null) mnuQuanLyDichVu.Visible = false;
+
                 //Các nút icon to
-                // Khách hàng thường không có quyền bấm các nút của nghiệp vụ phòng khám
                 tsbTiepNhan.Visible = false;
                 tsbDatLich.Visible = true;
                 tsbKhamBenh.Visible = false;
                 tsbThanhToan.Visible = false;
+
+                //Toolstrip Thuốc & Dịch vụ
+                if (tsbThuoc != null) tsbThuoc.Visible = false;
+                if (tsbDichVu != null) tsbDichVu.Visible = false;
             }
         }
 
@@ -165,10 +197,12 @@ namespace QuanLyPhongMach.Forms
         {
             DangXuat();
         }
-        private void toolStripButton5_Click(object sender, EventArgs e)
+
+        private void tsbDangXuat_Click(object sender, EventArgs e)
         {
             DangXuat();
         }
+
 
         private void FrmTrangChu_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -210,6 +244,26 @@ namespace QuanLyPhongMach.Forms
             MoFormLichKham();
         }
 
-        
+
+        //Sự kiện mở FrmThuoc và FrmDichVu (BacSi va NhanVien)
+        private void MoFormThuoc()
+        {
+            QuanLyPhongMach.Forms.FrmQuanLyThuoc frm = new QuanLyPhongMach.Forms.FrmQuanLyThuoc();
+            frm.ShowDialog();
+        }
+        private void tsbThuoc_Click(object sender, EventArgs e)
+        {
+            MoFormThuoc();
+        }
+
+        private void MoFormDichVu()
+        {
+            QuanLyPhongMach.Forms.FrmDichVu frm = new QuanLyPhongMach.Forms.FrmDichVu();
+            frm.ShowDialog();
+        }
+        private void tsbDichVu_Click(object sender, EventArgs e)
+        {
+            MoFormDichVu();
+        }
     }
 }

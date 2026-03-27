@@ -189,6 +189,7 @@
             mnuThanhToan.Name = "mnuThanhToan";
             mnuThanhToan.Size = new Size(303, 36);
             mnuThanhToan.Text = "Thanh toán";
+            mnuThanhToan.Click += mnuThanhToan_Click;
             // 
             // toolStripSeparator1
             // 
@@ -258,6 +259,7 @@
             tsbThanhToan.Size = new Size(114, 75);
             tsbThanhToan.Text = "Thanh toán";
             tsbThanhToan.TextImageRelation = TextImageRelation.ImageAboveText;
+            tsbThanhToan.Click += tsbThanhToan_Click;
             // 
             // tsbThuoc
             // 

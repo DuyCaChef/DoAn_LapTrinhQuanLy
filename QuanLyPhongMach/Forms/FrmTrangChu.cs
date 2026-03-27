@@ -248,8 +248,8 @@ namespace QuanLyPhongMach.Forms
         //Sự kiện mở FrmThuoc và FrmDichVu (BacSi va NhanVien)
         private void MoFormThuoc()
         {
-            QuanLyPhongMach.Forms.FrmQuanLyThuoc frm = new QuanLyPhongMach.Forms.FrmQuanLyThuoc();
-            frm.ShowDialog();
+            QuanLyPhongMach.Forms.FrmQuanLyThuoc frmThuoc = new QuanLyPhongMach.Forms.FrmQuanLyThuoc();
+            frmThuoc.ShowDialog();
         }
         private void tsbThuoc_Click(object sender, EventArgs e)
         {
@@ -258,12 +258,28 @@ namespace QuanLyPhongMach.Forms
 
         private void MoFormDichVu()
         {
-            QuanLyPhongMach.Forms.FrmDichVu frm = new QuanLyPhongMach.Forms.FrmDichVu();
-            frm.ShowDialog();
+            QuanLyPhongMach.Forms.FrmDichVu frmDichVu = new QuanLyPhongMach.Forms.FrmDichVu();
+            frmDichVu.ShowDialog();
         }
         private void tsbDichVu_Click(object sender, EventArgs e)
         {
             MoFormDichVu();
+        }
+
+        //Sự kiện mở FrmThuNgan (quyền NhanVien và Admin)
+        private void MoFromThuNgan()
+        {
+            QuanLyPhongMach.Forms.FrmThuNgan frmThuNgan = new QuanLyPhongMach.Forms.FrmThuNgan();
+            frmThuNgan.ShowDialog();
+        }
+        private void mnuThanhToan_Click(object sender, EventArgs e)
+        {
+            MoFromThuNgan();
+        }
+
+        private void tsbThanhToan_Click(object sender, EventArgs e)
+        {
+            MoFromThuNgan();
         }
     }
 }

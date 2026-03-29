@@ -423,97 +423,116 @@ namespace QuanLyPhongMach.Forms
             {
                 using (var db = new PhongMachDbContext())
                 {
-                    // [BỌC TRONG TRANSACTION ĐỂ ĐẢM BẢO LƯU ĐỒNG THỜI PHIẾU KHÁM, THUỐC VÀ DỊCH VỤ]
-                    using (var transaction = db.Database.BeginTransaction())
+                    // Khai báo transaction rõ ràng để tránh lỗi scope context
+                    var transaction = db.Database.BeginTransaction();
+                    try
                     {
-                        try
+                        // 1. Lưu thông tin Khám Bệnh vào Bảng Phiếu Khám
+                        var phieuKham = db.PhieuKhams.FirstOrDefault(pk => pk.MaLichKham == _maLichKhamHienTai);
+                        if (phieuKham == null)
                         {
-                            // 1. Lưu thông tin Khám Bệnh vào Bảng Phiếu Khám
-                            var phieuKham = db.PhieuKhams.FirstOrDefault(pk => pk.MaLichKham == _maLichKhamHienTai);
-                            if (phieuKham == null)
+                            phieuKham = new PhieuKham
                             {
-                                phieuKham = new PhieuKham
-                                {
-                                    MaLichKham = _maLichKhamHienTai,
-                                    TrieuChung = trieuChung,
-                                    ChanDoan = chanDoan,
-                                    LoiDan = loiDan,
-                                    NgayLap = DateTime.Now
-                                };
-                                db.PhieuKhams.Add(phieuKham);
-                                db.SaveChanges(); // Lấy ID Phiếu khám
-                            }
-                            else
-                            {
-                                phieuKham.TrieuChung = trieuChung;
-                                phieuKham.ChanDoan = chanDoan;
-                                phieuKham.LoiDan = loiDan;
-                                db.SaveChanges();
-                            }
+                                MaLichKham = _maLichKhamHienTai,
+                                TrieuChung = trieuChung,
+                                ChanDoan = chanDoan,
+                                LoiDan = loiDan,
+                                NgayLap = DateTime.Now,
+                                MaHienThi = "TEMP" // [QUAN TRỌNG] Gán tạm để tránh lỗi NOT NULL nếu CSDL yêu cầu
+                            };
+                            db.PhieuKhams.Add(phieuKham);
+                            db.SaveChanges(); // Lấy ID Phiếu khám (MaPK dạng số nguyên)
 
-                            // 2. Cập nhật Dịch vụ (Xóa cũ, Thêm mới từ Lưới)
-                            var oldDichVus = db.Set<ChiTietDichVu>().Where(c => c.MaPK == phieuKham.MaPK);
-                            db.Set<ChiTietDichVu>().RemoveRange(oldDichVus);
-
-                            foreach (DataGridViewRow row in dgvChiDinhDichVu.Rows)
-                            {
-                                if (row.Cells["MaDV"].Value != null)
-                                {
-                                    var ct = new ChiTietDichVu
-                                    {
-                                        MaPK = phieuKham.MaPK,
-                                        MaDV = (int)row.Cells["MaDV"].Value,
-                                        SoLuong = 1
-                                    };
-                                    db.Set<ChiTietDichVu>().Add(ct);
-                                }
-                            }
-
-                            // 3. Cập nhật Thuốc (Xóa cũ, Thêm mới từ Lưới)
-                            var oldThuocs = db.Set<ChiTietDonThuoc>().Where(c => c.MaPK == phieuKham.MaPK);
-                            db.Set<ChiTietDonThuoc>().RemoveRange(oldThuocs);
-
-                            foreach (DataGridViewRow row in dgvKeDonThuoc.Rows)
-                            {
-                                if (row.Cells["MaThuoc"].Value != null)
-                                {
-                                    var ct = new ChiTietDonThuoc
-                                    {
-                                        MaPK = phieuKham.MaPK,
-                                        MaThuoc = (int)row.Cells["MaThuoc"].Value,
-                                        SoLuong = Convert.ToInt32(row.Cells["SoLuong"].Value),
-                                        CachDung = "" // Bỏ trống do giao diện không còn cột này
-                                    };
-                                    db.Set<ChiTietDonThuoc>().Add(ct);
-                                }
-                            }
-
-                            // 4. Cập nhật trạng thái lịch khám
-                            var lichKham = db.LichKhams.FirstOrDefault(lk => lk.MaLichKham == _maLichKhamHienTai);
-                            if (lichKham != null)
-                                lichKham.TrangThai = "Đã khám";
-
-                            // Lưu và Commit
+                            // [CẬP NHẬT CSDL] Cập nhật ngay chuỗi MPK chuẩn vào CSDL
+                            phieuKham.MaHienThi = "MPK" + phieuKham.MaPK;
                             db.SaveChanges();
-                            transaction.Commit();
-
-                            MessageBox.Show("Đã lưu Phiếu khám, Chỉ định Dịch vụ và Đơn thuốc thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            // Làm mới giao diện
-                            LoadDanhSachCho();
-                            ResetFormKham();
                         }
-                        catch (Exception exTransaction)
+                        else
                         {
-                            transaction.Rollback();
-                            throw exTransaction; // Đẩy ra catch bên ngoài
+                            phieuKham.TrieuChung = trieuChung;
+                            phieuKham.ChanDoan = chanDoan;
+                            phieuKham.LoiDan = loiDan;
+
+                            // [BỔ SUNG QUAN TRỌNG] Đảm bảo phiếu cũ cũng có mã MPK
+                            if (string.IsNullOrEmpty(phieuKham.MaHienThi))
+                            {
+                                phieuKham.MaHienThi = "MPK" + phieuKham.MaPK;
+                            }
+                            db.SaveChanges();
                         }
+
+                        // 2. Cập nhật Dịch vụ (Xóa cũ, Thêm mới từ Lưới)
+                        var oldDichVus = db.Set<ChiTietDichVu>().Where(c => c.MaPK == phieuKham.MaPK);
+                        db.Set<ChiTietDichVu>().RemoveRange(oldDichVus);
+
+                        foreach (DataGridViewRow row in dgvChiDinhDichVu.Rows)
+                        {
+                            if (row.Cells["MaDV"].Value != null)
+                            {
+                                var ct = new ChiTietDichVu
+                                {
+                                    MaPK = phieuKham.MaPK,
+                                    MaDV = Convert.ToInt32(row.Cells["MaDV"].Value), // Dùng Convert an toàn hơn (int)
+                                    SoLuong = 1
+                                };
+                                db.Set<ChiTietDichVu>().Add(ct);
+                            }
+                        }
+
+                        // 3. Cập nhật Thuốc (Xóa cũ, Thêm mới từ Lưới)
+                        var oldThuocs = db.Set<ChiTietDonThuoc>().Where(c => c.MaPK == phieuKham.MaPK);
+                        db.Set<ChiTietDonThuoc>().RemoveRange(oldThuocs);
+
+                        foreach (DataGridViewRow row in dgvKeDonThuoc.Rows)
+                        {
+                            if (row.Cells["MaThuoc"].Value != null)
+                            {
+                                var ct = new ChiTietDonThuoc
+                                {
+                                    MaPK = phieuKham.MaPK,
+                                    MaThuoc = Convert.ToInt32(row.Cells["MaThuoc"].Value), // Dùng Convert an toàn hơn
+                                    SoLuong = Convert.ToInt32(row.Cells["SoLuong"].Value)
+                                    // Đã xóa trường CachDung theo yêu cầu
+                                };
+                                db.Set<ChiTietDonThuoc>().Add(ct);
+                            }
+                        }
+
+                        // 4. Cập nhật trạng thái lịch khám
+                        var lichKham = db.LichKhams.FirstOrDefault(lk => lk.MaLichKham == _maLichKhamHienTai);
+                        if (lichKham != null)
+                            lichKham.TrangThai = "Đã khám";
+
+                        // Lưu và Commit
+                        db.SaveChanges();
+                        transaction.Commit();
+
+                        MessageBox.Show("Đã lưu Phiếu khám, Chỉ định Dịch vụ và Đơn thuốc thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Làm mới giao diện
+                        LoadDanhSachCho();
+                        ResetFormKham();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        transaction.Dispose();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi lưu bệnh án: " + ex.Message, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // [ĐÃ SỬA] Hiển thị rõ nguyên nhân gốc (InnerException) thay vì thông báo chung chung
+                string chiTietLoi = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    chiTietLoi += "\n\nNguyên nhân gốc (Inner Exception):\n" + ex.InnerException.Message;
+                }
+                MessageBox.Show("Lỗi khi lưu bệnh án: \n" + chiTietLoi, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

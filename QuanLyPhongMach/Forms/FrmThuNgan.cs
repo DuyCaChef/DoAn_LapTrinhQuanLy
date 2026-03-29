@@ -61,7 +61,7 @@ namespace QuanLyPhongMach.Forms
                     // Dùng NOT EXISTS HOADON để xác định phiếu nào chưa được thanh toán
                     string query = @"
                         SELECT 
-                            pk.MaPK AS MaPhieuKham,         
+                            ISNULL(pk.MaHienThi, 'MPK' + CAST(pk.MaPK AS NVARCHAR)) AS MaPhieuKham,    
                             kh.TenKH AS TenBenhNhan,        
                             bs.TenBS AS TenBacSiKham        
                         FROM PHIEUKHAM pk
@@ -69,7 +69,7 @@ namespace QuanLyPhongMach.Forms
                         JOIN KHACHHANG kh ON lk.MaKH = kh.MaKH
                         JOIN BACSI bs ON lk.MaBS = bs.MaBS
                         WHERE NOT EXISTS (SELECT 1 FROM HOADON hd WHERE hd.MaPK = pk.MaPK)
-                        AND (CAST(pk.MaPK AS NVARCHAR) LIKE @tuKhoa OR kh.TenKH LIKE @tuKhoa)";
+                        AND (ISNULL(pk.MaHienThi, 'MPK' + CAST(pk.MaPK AS NVARCHAR)) LIKE @tuKhoa OR kh.TenKH LIKE @tuKhoa)";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -102,10 +102,15 @@ namespace QuanLyPhongMach.Forms
             {
                 DataGridViewRow row = dgvChiTietPhieuKham.Rows[e.RowIndex];
 
-                // Đã lấy tên cột theo đúng (Name) trong phần Design của bạn
-                maPhieuKhamDuocChon = row.Cells["MaPhieuKham"].Value.ToString();
+                // Lấy mã hiển thị (Ví dụ: "MPK15")
+                string maHienThi = row.Cells["MaPhieuKham"].Value.ToString();
+
+                // Phải cắt bỏ chữ MPK để lấy lại số nguyên gốc truyền vào SQL
+                maPhieuKhamDuocChon = maHienThi.Replace("MPK", "");
+
                 txtBenhNhan.Text = row.Cells["TenBenhNhan"].Value.ToString();
 
+                // Truyền con số (VD: "15") vào hàm Load chi tiết
                 LoadChiTietDichVuVaThuoc(maPhieuKhamDuocChon);
             }
         }
@@ -192,7 +197,7 @@ namespace QuanLyPhongMach.Forms
             }
 
             DialogResult dr = MessageBox.Show($"Xác nhận thu tiền bệnh nhân {txtBenhNhan.Text}\nTổng tiền: {lblTongTien.Text}?",
-                                              "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                               "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dr == DialogResult.Yes)
             {
                 try
@@ -213,14 +218,27 @@ namespace QuanLyPhongMach.Forms
                             cmdInsert.ExecuteNonQuery();
                         }
 
-                        MessageBox.Show("Thanh toán thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // =========================================================================
+                        //Thay thế MessageBox thông báo đơn thuần bằng DialogResult hỏi In hoá đơn
+                        // =========================================================================
+                        DialogResult printDialog = MessageBox.Show("Thanh toán thành công!\nBạn có muốn in hoá đơn cho bệnh nhân này không?",
+                                                                   "In hoá đơn",
+                                                                   MessageBoxButtons.YesNo,
+                                                                   MessageBoxIcon.Question);
+                        if (printDialog == DialogResult.Yes)
+                        {
+                            // Sau này nếu muốn làm in thật bằng PrintDocument, bạn viết code in ở đây
+                            MessageBox.Show("In hoá đơn thành công!", "Hệ thống máy in", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
 
+                        // Dọn dẹp màn hình sau khi thanh toán
                         maPhieuKhamDuocChon = "";
                         txtBenhNhan.Text = "";
                         txtGhiChu.Text = "";
                         lblTongTien.Text = "0 VNĐ";
                         dgvChiTietDichVu.Rows.Clear();
 
+                        // Load lại danh sách (phiếu vừa thanh toán sẽ tự động biến mất)
                         LoadDanhSachPhieuKhamChuaThanhToan(txtTimKiem.Text);
                     }
                 }

@@ -23,8 +23,5 @@ namespace QuanLyPhongMach.Data.Entities
         public virtual Thuoc Thuoc { get; set; }
 
         public int SoLuong { get; set; }
-
-        [StringLength(200)]
-        public string CachDung { get; set; } // Ví dụ: Sáng 1 viên, tối 1 viên
     }
 }

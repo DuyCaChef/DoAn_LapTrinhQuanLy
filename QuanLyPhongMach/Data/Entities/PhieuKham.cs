@@ -17,6 +17,9 @@ namespace QuanLyPhongMach.Data.Entities
         [Required]
         public int MaLichKham { get; set; }
 
+        [StringLength(20)]
+        public string MaHienThi { get; set; }
+
         [StringLength(500)]
         public string TrieuChung { get; set; }
 

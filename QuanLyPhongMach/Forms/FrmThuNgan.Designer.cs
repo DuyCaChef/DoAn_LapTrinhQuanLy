@@ -49,7 +49,6 @@
             label7 = new Label();
             txtGhiChu = new RichTextBox();
             btnXacNhanThanhToan = new Button();
-            btnInHoaDon = new Button();
             dgvChiTietDichVu = new DataGridView();
             TenDichVu = new DataGridViewTextBoxColumn();
             DonGiaDichVu = new DataGridViewTextBoxColumn();
@@ -284,18 +283,6 @@
             btnXacNhanThanhToan.UseVisualStyleBackColor = false;
             btnXacNhanThanhToan.Click += btnXacNhanThanhToan_Click;
             // 
-            // btnInHoaDon
-            // 
-            btnInHoaDon.BackColor = Color.SlateGray;
-            btnInHoaDon.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnInHoaDon.ForeColor = SystemColors.ButtonHighlight;
-            btnInHoaDon.Location = new Point(542, 952);
-            btnInHoaDon.Name = "btnInHoaDon";
-            btnInHoaDon.Size = new Size(723, 60);
-            btnInHoaDon.TabIndex = 9;
-            btnInHoaDon.Text = "In hoá đơn";
-            btnInHoaDon.UseVisualStyleBackColor = false;
-            // 
             // dgvChiTietDichVu
             // 
             dgvChiTietDichVu.AllowUserToAddRows = false;
@@ -360,7 +347,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1898, 1024);
             Controls.Add(dgvChiTietDichVu);
-            Controls.Add(btnInHoaDon);
             Controls.Add(btnXacNhanThanhToan);
             Controls.Add(txtGhiChu);
             Controls.Add(cboHinhThuc);
@@ -408,7 +394,6 @@
         private Label label7;
         private RichTextBox txtGhiChu;
         private Button btnXacNhanThanhToan;
-        private Button btnInHoaDon;
         private DataGridView dgvChiTietDichVu;
         private DataGridViewTextBoxColumn TenDichVu;
         private DataGridViewTextBoxColumn DonGiaDichVu;

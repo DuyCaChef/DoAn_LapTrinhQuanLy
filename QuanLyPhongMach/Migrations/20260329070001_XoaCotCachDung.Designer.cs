@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuanLyPhongMach.Data;
 
@@ -11,9 +12,11 @@ using QuanLyPhongMach.Data;
 namespace QuanLyPhongMach.Migrations
 {
     [DbContext(typeof(PhongMachDbContext))]
-    partial class PhongMachDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260329070001_XoaCotCachDung")]
+    partial class XoaCotCachDung
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

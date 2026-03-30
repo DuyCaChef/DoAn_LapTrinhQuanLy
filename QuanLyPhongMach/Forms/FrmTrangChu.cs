@@ -44,7 +44,6 @@ namespace QuanLyPhongMach.Forms
             // 1.Đã vào được Main thì ẩn nút Đăng Nhập, hiện Đăng Xuất/Thoát
             if (mnuDangNhap != null) mnuDangNhap.Visible = false;
             if (mnuDangXuat != null) mnuDangXuat.Visible = true;
-            if (mnuThoat != null) mnuThoat.Visible = true;
 
             // 2.PHÂN QUYỀN THEO VAI TRÒ
             // Kiểm tra an toàn phòng trường hợp biến rỗng
@@ -56,8 +55,6 @@ namespace QuanLyPhongMach.Forms
             // Đổi thành Contains("ADMIN") cho đồng bộ và chống lỗi khoảng trắng ngầm
             if (vaiTro.Contains("ADMIN"))
             {
-                mnuQuanLyBacSi.Visible = true;
-                mnuQuanLyNhanVien.Visible = true;
                 mnuQuanLyKhachHang.Visible = true;
 
                 mnuTiepNhan.Visible = true;
@@ -86,8 +83,6 @@ namespace QuanLyPhongMach.Forms
             }
             else if (vaiTro.Contains("BAC") || vaiTro.Contains("BÁC"))
             {
-                mnuQuanLyBacSi.Visible = false;
-                mnuQuanLyNhanVien.Visible = false;
                 mnuQuanLyKhachHang.Visible = false;
 
                 mnuKhamBenh.Visible = true;
@@ -116,8 +111,6 @@ namespace QuanLyPhongMach.Forms
             }
             else if (vaiTro.Contains("NHAN") || vaiTro.Contains("NHÂN"))
             {
-                mnuQuanLyBacSi.Visible = false;
-                mnuQuanLyNhanVien.Visible = false;
                 mnuQuanLyKhachHang.Visible = false;
 
                 mnuKhamBenh.Visible = false;
@@ -146,8 +139,6 @@ namespace QuanLyPhongMach.Forms
             }
             else if (vaiTro.Contains("KHACH") || vaiTro.Contains("KHÁCH"))
             {
-                mnuQuanLyBacSi.Visible = false;
-                mnuQuanLyNhanVien.Visible = false;
                 mnuQuanLyKhachHang.Visible = false;
 
                 mnuKhamBenh.Visible = false;
@@ -256,12 +247,21 @@ namespace QuanLyPhongMach.Forms
             MoFormThuoc();
         }
 
+        private void mnuQuanLyThuoc_Click(object sender, EventArgs e)
+        {
+            MoFormThuoc();
+        }
+
         private void MoFormDichVu()
         {
             QuanLyPhongMach.Forms.FrmDichVu frmDichVu = new QuanLyPhongMach.Forms.FrmDichVu();
             frmDichVu.ShowDialog();
         }
         private void tsbDichVu_Click(object sender, EventArgs e)
+        {
+            MoFormDichVu();
+        }
+        private void mnuQuanLyDichVu_Click(object sender, EventArgs e)
         {
             MoFormDichVu();
         }
@@ -296,6 +296,23 @@ namespace QuanLyPhongMach.Forms
         private void tsbDatLich_Click(object sender, EventArgs e)
         {
             MoFromKhachHang();
+        }
+
+        private void mnuQuanLyKhachHang_Click(object sender, EventArgs e)
+        {
+            MoFromKhachHang();
+        }
+
+        //Mở FrmAdmin (quyền chỉ dành cho Admin)
+        private void MoFormAdmin()
+        {
+            QuanLyPhongMach.Forms.FrmAdmin frmAdmin = new QuanLyPhongMach.Forms.FrmAdmin();
+            frmAdmin.ShowDialog();
+        }
+
+        private void mnuAdmin_Click(object sender, EventArgs e)
+        {
+            MoFormAdmin();
         }
     }
 }

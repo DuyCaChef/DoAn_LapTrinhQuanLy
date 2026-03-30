@@ -270,9 +270,9 @@
             lblMaBenhNhan.ForeColor = SystemColors.HotTrack;
             lblMaBenhNhan.Location = new Point(241, 86);
             lblMaBenhNhan.Name = "lblMaBenhNhan";
-            lblMaBenhNhan.Size = new Size(185, 32);
+            lblMaBenhNhan.Size = new Size(256, 32);
             lblMaBenhNhan.TabIndex = 1;
-            lblMaBenhNhan.Text = "Mã BN: KH0012";
+            lblMaBenhNhan.Text = "Mã BN: chưa xác định";
             // 
             // lblTenBenhNhan
             // 
@@ -281,9 +281,9 @@
             lblTenBenhNhan.ForeColor = SystemColors.HotTrack;
             lblTenBenhNhan.Location = new Point(150, 37);
             lblTenBenhNhan.Name = "lblTenBenhNhan";
-            lblTenBenhNhan.Size = new Size(396, 38);
+            lblTenBenhNhan.Size = new Size(355, 38);
             lblTenBenhNhan.TabIndex = 0;
-            lblTenBenhNhan.Text = "Bệnh Nhân: Nguyễn Tuấn Hải";
+            lblTenBenhNhan.Text = "Bệnh Nhân: Chưa xác định";
             // 
             // dgvLichKham
             // 
@@ -430,6 +430,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            splitContainer2.Panel1.BackColor = Color.WhiteSmoke;
             splitContainer2.Panel1.Controls.Add(btnCapNhat);
             splitContainer2.Panel1.Controls.Add(dtpNgaySinh);
             splitContainer2.Panel1.Controls.Add(txtDiaChi);
@@ -445,6 +446,7 @@
             // 
             // splitContainer2.Panel2
             // 
+            splitContainer2.Panel2.BackColor = Color.OldLace;
             splitContainer2.Panel2.Controls.Add(ckbHienMatKhau);
             splitContainer2.Panel2.Controls.Add(btnDoiMatKhau);
             splitContainer2.Panel2.Controls.Add(label14);

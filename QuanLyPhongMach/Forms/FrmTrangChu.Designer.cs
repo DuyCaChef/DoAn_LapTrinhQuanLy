@@ -32,10 +32,7 @@
             mnuHeThong = new ToolStripMenuItem();
             mnuDangNhap = new ToolStripMenuItem();
             mnuDangXuat = new ToolStripMenuItem();
-            mnuThoat = new ToolStripMenuItem();
             mnuQuanLy = new ToolStripMenuItem();
-            mnuQuanLyBacSi = new ToolStripMenuItem();
-            mnuQuanLyNhanVien = new ToolStripMenuItem();
             mnuQuanLyKhachHang = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             mnuQuanLyThuoc = new ToolStripMenuItem();
@@ -94,7 +91,7 @@
             // 
             // mnuHeThong
             // 
-            mnuHeThong.DropDownItems.AddRange(new ToolStripItem[] { mnuDangNhap, mnuDangXuat, mnuThoat });
+            mnuHeThong.DropDownItems.AddRange(new ToolStripItem[] { mnuDangNhap, mnuDangXuat });
             mnuHeThong.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             mnuHeThong.Name = "mnuHeThong";
             mnuHeThong.Size = new Size(110, 32);
@@ -103,47 +100,30 @@
             // mnuDangNhap
             // 
             mnuDangNhap.Name = "mnuDangNhap";
-            mnuDangNhap.Size = new Size(210, 36);
+            mnuDangNhap.Size = new Size(270, 36);
             mnuDangNhap.Text = "Đăng nhập";
             // 
             // mnuDangXuat
             // 
             mnuDangXuat.Name = "mnuDangXuat";
-            mnuDangXuat.Size = new Size(210, 36);
+            mnuDangXuat.Size = new Size(270, 36);
             mnuDangXuat.Text = "Đăng xuất";
             mnuDangXuat.Click += mnuDangXuat_Click;
             // 
-            // mnuThoat
-            // 
-            mnuThoat.Name = "mnuThoat";
-            mnuThoat.Size = new Size(210, 36);
-            mnuThoat.Text = "Thoát";
-            // 
             // mnuQuanLy
             // 
-            mnuQuanLy.DropDownItems.AddRange(new ToolStripItem[] { mnuQuanLyBacSi, mnuQuanLyNhanVien, mnuQuanLyKhachHang, toolStripSeparator2, mnuQuanLyThuoc, mnuQuanLyDichVu });
+            mnuQuanLy.DropDownItems.AddRange(new ToolStripItem[] { mnuQuanLyKhachHang, toolStripSeparator2, mnuQuanLyThuoc, mnuQuanLyDichVu });
             mnuQuanLy.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             mnuQuanLy.Name = "mnuQuanLy";
             mnuQuanLy.Size = new Size(95, 32);
             mnuQuanLy.Text = "Quản lý";
-            // 
-            // mnuQuanLyBacSi
-            // 
-            mnuQuanLyBacSi.Name = "mnuQuanLyBacSi";
-            mnuQuanLyBacSi.Size = new Size(286, 36);
-            mnuQuanLyBacSi.Text = "Quản lý bác sĩ";
-            // 
-            // mnuQuanLyNhanVien
-            // 
-            mnuQuanLyNhanVien.Name = "mnuQuanLyNhanVien";
-            mnuQuanLyNhanVien.Size = new Size(286, 36);
-            mnuQuanLyNhanVien.Text = "Quản lý nhân viên";
             // 
             // mnuQuanLyKhachHang
             // 
             mnuQuanLyKhachHang.Name = "mnuQuanLyKhachHang";
             mnuQuanLyKhachHang.Size = new Size(286, 36);
             mnuQuanLyKhachHang.Text = "Quản lý khách hàng";
+            mnuQuanLyKhachHang.Click += mnuQuanLyKhachHang_Click;
             // 
             // toolStripSeparator2
             // 
@@ -155,12 +135,14 @@
             mnuQuanLyThuoc.Name = "mnuQuanLyThuoc";
             mnuQuanLyThuoc.Size = new Size(286, 36);
             mnuQuanLyThuoc.Text = "Quản lý thuốc";
+            mnuQuanLyThuoc.Click += mnuQuanLyThuoc_Click;
             // 
             // mnuQuanLyDichVu
             // 
             mnuQuanLyDichVu.Name = "mnuQuanLyDichVu";
             mnuQuanLyDichVu.Size = new Size(286, 36);
             mnuQuanLyDichVu.Text = "Quản lý dịch vụ";
+            mnuQuanLyDichVu.Click += mnuQuanLyDichVu_Click;
             // 
             // mnuNghiepVu
             // 
@@ -205,9 +187,11 @@
             // 
             // mnuAdmin
             // 
+            mnuAdmin.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             mnuAdmin.Name = "mnuAdmin";
-            mnuAdmin.Size = new Size(81, 32);
+            mnuAdmin.Size = new Size(86, 32);
             mnuAdmin.Text = "Admin";
+            mnuAdmin.Click += mnuAdmin_Click;
             // 
             // toolStrip1
             // 
@@ -520,10 +504,7 @@
         private MenuStrip menuStrip1;
         private ToolStripMenuItem mnuHeThong;
         private ToolStripMenuItem mnuDangXuat;
-        private ToolStripMenuItem mnuThoat;
         private ToolStripMenuItem mnuQuanLy;
-        private ToolStripMenuItem mnuQuanLyBacSi;
-        private ToolStripMenuItem mnuQuanLyNhanVien;
         private ToolStripMenuItem mnuNghiepVu;
         private ToolStripMenuItem mnuTiepNhan;
         private ToolStripMenuItem mnuKhamBenh;

@@ -239,7 +239,7 @@ namespace QuanLyPhongMach.Forms
         //Sự kiện mở FrmThuoc và FrmDichVu (BacSi va NhanVien)
         private void MoFormThuoc()
         {
-            QuanLyPhongMach.Forms.FrmQuanLyThuoc frmThuoc = new QuanLyPhongMach.Forms.FrmQuanLyThuoc();
+            QuanLyPhongMach.Forms.FrmQuanLyThuoc frmThuoc = new QuanLyPhongMach.Forms.FrmQuanLyThuoc(this.currentUser);
             frmThuoc.ShowDialog();
         }
         private void tsbThuoc_Click(object sender, EventArgs e)
@@ -254,7 +254,7 @@ namespace QuanLyPhongMach.Forms
 
         private void MoFormDichVu()
         {
-            QuanLyPhongMach.Forms.FrmDichVu frmDichVu = new QuanLyPhongMach.Forms.FrmDichVu();
+            QuanLyPhongMach.Forms.FrmDichVu frmDichVu = new QuanLyPhongMach.Forms.FrmDichVu(this.currentUser);
             frmDichVu.ShowDialog();
         }
         private void tsbDichVu_Click(object sender, EventArgs e)

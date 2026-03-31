@@ -18,13 +18,28 @@ namespace QuanLyPhongMach.Forms
         // Biến lưu mã dịch vụ đang được chọn trên lưới
         private int _maDichVuHienTai = 0;
 
-        public FrmDichVu()
+        // Biến lưu người dùng đang truy cập vào 
+        private TaiKhoan _taiKhoanDangNhap;
+
+        public FrmDichVu(TaiKhoan tk)
         {
             InitializeComponent();
+            _taiKhoanDangNhap = tk;
         }
 
         private void FrmDichVu_Load(object sender, EventArgs e)
         {
+            // ========================================================
+            // PHÂN QUYỀN GIAO DIỆN: KHOÁ CHỨC NĂNG VỚI NON-ADMIN
+            // ========================================================
+            if (_taiKhoanDangNhap != null && _taiKhoanDangNhap.VaiTro != "ADMIN")
+            {
+                // Ẩn (hoặc làm mờ) các nút thao tác
+                btnThemDichVu.Enabled = false;
+                btnSuaDichVu.Enabled = false;
+                btnXoaDichVu.Enabled = false;
+            }
+
             LoadDanhSachDichVu();
         }
 

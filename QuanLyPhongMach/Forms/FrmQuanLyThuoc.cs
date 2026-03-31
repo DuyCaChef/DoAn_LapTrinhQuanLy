@@ -17,9 +17,13 @@ namespace QuanLyPhongMach.Forms
         //Biến lưu mã thuốc đang được chọn trên lưới
         private int _maThuocHienTai = 0;
 
-        public FrmQuanLyThuoc()
+        // Biến lưu tài khoản đang mở form
+        private TaiKhoan _taiKhoanDangNhap;
+
+        public FrmQuanLyThuoc(TaiKhoan tk)
         {
             InitializeComponent();
+            _taiKhoanDangNhap = tk; // Lưu lại
         }
 
         private void FrmQuanLyThuoc_Load(object sender, EventArgs e)
@@ -29,7 +33,18 @@ namespace QuanLyPhongMach.Forms
                 cboDonViTinh.SelectedIndex = 0;
             }
 
-            LoadDanhSachThuoc();
+            // ========================================================
+            // PHÂN QUYỀN GIAO DIỆN: KHOÁ CHỨC NĂNG VỚI NON-ADMIN
+            // ========================================================
+            if (_taiKhoanDangNhap != null && _taiKhoanDangNhap.VaiTro != "ADMIN")
+            {
+                // Ẩn (hoặc làm mờ) các nút thao tác
+                btnThemThuoc.Enabled = false;
+                btnSuaThuoc.Enabled = false;
+                btnXoaThuoc.Enabled = false;
+            }
+
+                LoadDanhSachThuoc();
         }
 
         //Tải danh sách thuốc lên datagridview
@@ -227,7 +242,14 @@ namespace QuanLyPhongMach.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi sửa thuốc: " + ex.Message, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Lấy lỗi thực sự ẩn bên trong (Inner Exception)
+                string loiThatSu = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    loiThatSu = ex.InnerException.Message; // Đây chính là câu trả lời từ SQL Server!
+                }
+
+                MessageBox.Show("Nguyên nhân gốc rễ gây lỗi là:\n\n" + loiThatSu, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

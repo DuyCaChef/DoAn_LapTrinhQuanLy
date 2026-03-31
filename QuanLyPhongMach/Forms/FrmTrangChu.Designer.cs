@@ -100,13 +100,13 @@
             // mnuDangNhap
             // 
             mnuDangNhap.Name = "mnuDangNhap";
-            mnuDangNhap.Size = new Size(270, 36);
+            mnuDangNhap.Size = new Size(210, 36);
             mnuDangNhap.Text = "Đăng nhập";
             // 
             // mnuDangXuat
             // 
             mnuDangXuat.Name = "mnuDangXuat";
-            mnuDangXuat.Size = new Size(270, 36);
+            mnuDangXuat.Size = new Size(210, 36);
             mnuDangXuat.Text = "Đăng xuất";
             mnuDangXuat.Click += mnuDangXuat_Click;
             // 

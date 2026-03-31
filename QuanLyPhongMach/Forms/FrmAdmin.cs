@@ -1,18 +1,20 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Update.Internal;
+using QuanLyPhongMach.Data;
+using QuanLyPhongMach.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Security.Cryptography;
-using QuanLyPhongMach.Data.Entities;
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using QuanLyPhongMach.Data;
-using System.Drawing.Design;
-using System.Text.RegularExpressions;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace QuanLyPhongMach.Forms
 {
@@ -53,6 +55,16 @@ namespace QuanLyPhongMach.Forms
             LoadDataTabNhanSu();
             //Tải danh sách hồ sơ cho dgvHoSo
             LoadDanhSachHoSo();
+
+            //Thiết lập mặc định cho tab Quản Lý Hệ Thống
+            dtbNgayBatDau.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            dtbNgayKetThuc.Value = DateTime.Now;
+
+            // Tắt auto generate column
+            dgvLichSuLog.AutoGenerateColumns = false;
+
+            // Load dữ liệu lên lưới
+            LoadDanhSachLog();
 
         }
 
@@ -638,7 +650,186 @@ namespace QuanLyPhongMach.Forms
             }
         }
 
-        
+
+        // =========================================================================
+        // ======================== TAB 3: NHẬT KÝ HỆ THỐNG =========================
+        // =========================================================================
+
+        //1. Tải và tìm kiếm nhật ký hệ thống
+        private void LoadDanhSachLog()
+        {
+            try
+            {
+                using (var db = new PhongMachDbContext())
+                {
+                    DateTime tuNgay = dtbNgayBatDau.Value.Date;
+                    DateTime denNgay = dtbNgayKetThuc.Value.Date.AddDays(1).AddTicks(-1); // Lấy đến 23:59:59 của ngày kết thúc
+                    string keyword = txtTimKiemLog.Text.Trim().ToLower();
+
+                    // Khởi tạo câu truy vấn và Kết bảng với TaiKhoan để lấy tên User
+                    var query = db.NhatKyHeThongs
+                                  .Include(nk => nk.TaiKhoan)
+                                  .Where(nk => nk.ThoiGian >= tuNgay && nk.ThoiGian <= denNgay)
+                                  .AsQueryable();
+
+                    // Nếu có nhập từ khóa tìm kiếm
+                    if (!string.IsNullOrEmpty(keyword))
+                    {
+                        query = query.Where(nk =>
+                            (nk.TaiKhoan != null && nk.TaiKhoan.TenDangNhap.ToLower().Contains(keyword)) ||
+                            nk.HanhDong.ToLower().Contains(keyword) ||
+                            (nk.MoTa != null && nk.MoTa.ToLower().Contains(keyword))
+                        );
+                    }
+
+                    // Sắp xếp log mới nhất lên đầu và định dạng dữ liệu đổ ra DataGridView
+                    var danhSachLog = query.OrderByDescending(nk => nk.ThoiGian)
+                                           .Select(nk => new
+                                           {
+                                               MaLog = nk.MaLog,
+                                               ThoiGian = nk.ThoiGian.ToString("dd/MM/yyyy HH:mm:ss"),
+                                               User = nk.TaiKhoan != null ? nk.TaiKhoan.TenDangNhap : "Unknown",
+                                               HanhDong = nk.HanhDong,
+                                               BangTacDong = nk.BangTacDong,
+                                               MoTa = nk.MoTa
+                                           }).ToList();
+
+                    dgvLichSuLog.DataSource = danhSachLog;
+
+                    // Map (Gắn) dữ liệu vào các cột đã thiết kế trên lưới
+                    if (dgvLichSuLog.Columns.Count >= 6)
+                    {
+                        dgvLichSuLog.Columns[0].DataPropertyName = "MaLog";
+                        dgvLichSuLog.Columns[1].DataPropertyName = "ThoiGian";
+                        dgvLichSuLog.Columns[2].DataPropertyName = "User";
+                        dgvLichSuLog.Columns[3].DataPropertyName = "HanhDong";
+                        dgvLichSuLog.Columns[4].DataPropertyName = "BangTacDong";
+                        dgvLichSuLog.Columns[5].DataPropertyName = "MoTa";
+                        dgvLichSuLog.Columns[5].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill; // Cột mô tả chiếm hết diện tích còn lại
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải nhật ký hệ thống: " + ex.Message, "Lỗi Database", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //Sự kiện nhấn nút tìm kiếm Log
+        private void btnLocLog_Click(object sender, EventArgs e)
+        {
+            if (dtbNgayBatDau.Value.Date > dtbNgayKetThuc.Value.Date)
+            {
+                MessageBox.Show("Ngày bắt đầu (Từ ngày) không được lớn hơn ngày kết thúc (Đến ngày)!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            LoadDanhSachLog();
+        }
+
+        // Tự động tìm kiếm nhanh khi nhấn Enter ở ô nhập từ khóa
+        private void txtTimKiemLog_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnLocLog_Click(sender, e);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        //2.Xuất dữ liệu ra file EXCEL
+        private void btnXuatExcel_Click(object sender, EventArgs e)
+        {
+            if (dgvLichSuLog.Rows.Count == 0)
+            {
+                MessageBox.Show("Không có dữ liệu nhật ký nào để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Lưu file báo cáo Excel";
+            saveFileDialog.Filter = "Excel Files (*.xlsx)|*.xlsx";
+            saveFileDialog.FileName = $"NhatKyHeThong_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor; // Đổi con trỏ chuột thành vòng xoay chờ đợi
+
+                    // Khởi tạo ứng dụng Excel
+                    Excel.Application excelApp = new Excel.Application();
+                    if (excelApp == null)
+                    {
+                        MessageBox.Show("Máy tính của bạn chưa cài đặt Microsoft Excel!", "Lỗi phần mềm", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Tạo Workbook và Worksheet
+                    Excel.Workbook workbook = excelApp.Workbooks.Add(Type.Missing);
+                    Excel.Worksheet worksheet = (Excel.Worksheet)workbook.ActiveSheet;
+                    worksheet.Name = "Nhat Ky He Thong";
+
+                    // 1. In tiêu đề (Header)
+                    for (int i = 0; i < dgvLichSuLog.Columns.Count; i++)
+                    {
+                        worksheet.Cells[1, i + 1] = dgvLichSuLog.Columns[i].HeaderText;
+                        // Format đậm cho Header
+                        worksheet.Cells[1, i + 1].Font.Bold = true;
+                        worksheet.Cells[1, i + 1].Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightGray);
+                    }
+
+                    // 2. Đổ dữ liệu từ DataGridView ra Excel
+                    for (int i = 0; i < dgvLichSuLog.Rows.Count; i++)
+                    {
+                        for (int j = 0; j < dgvLichSuLog.Columns.Count; j++)
+                        {
+                            if (dgvLichSuLog.Rows[i].Cells[j].Value != null)
+                            {
+                                // Thêm dấu nháy đơn ' phía trước thời gian để Excel hiểu là chuỗi (không bị lỗi format số)
+                                if (j == 1)
+                                    worksheet.Cells[i + 2, j + 1] = "'" + dgvLichSuLog.Rows[i].Cells[j].Value.ToString();
+                                else
+                                    worksheet.Cells[i + 2, j + 1] = dgvLichSuLog.Rows[i].Cells[j].Value.ToString();
+                            }
+                        }
+                    }
+
+                    // Căn chỉnh độ rộng cột tự động
+                    worksheet.Columns.AutoFit();
+
+                    // Lưu file và Đóng Excel
+                    workbook.SaveAs(saveFileDialog.FileName);
+                    workbook.Close();
+                    excelApp.Quit();
+
+                    // Giải phóng bộ nhớ COM
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show("Xuất file Excel thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show("Quá trình xuất Excel bị lỗi:\n" + ex.Message, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnDong_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Bạn có chắc chắn muốn đóng và quay về trang chủ?",
+                                                  "Xác nhận thoát",
+                                                  MessageBoxButtons.YesNo,
+                                                  MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+            }
+        }
     }
 }
 

@@ -69,7 +69,7 @@
             btnLocLog = new Button();
             dtbNgayKetThuc = new DateTimePicker();
             dtbNgayBatDau = new DateTimePicker();
-            txtTimUserHanhDong = new TextBox();
+            txtTimKiemLog = new TextBox();
             label17 = new Label();
             label16 = new Label();
             label14 = new Label();
@@ -560,10 +560,11 @@
             // 
             // splitContainer3.Panel1
             // 
+            splitContainer3.Panel1.BackColor = Color.Linen;
             splitContainer3.Panel1.Controls.Add(btnLocLog);
             splitContainer3.Panel1.Controls.Add(dtbNgayKetThuc);
             splitContainer3.Panel1.Controls.Add(dtbNgayBatDau);
-            splitContainer3.Panel1.Controls.Add(txtTimUserHanhDong);
+            splitContainer3.Panel1.Controls.Add(txtTimKiemLog);
             splitContainer3.Panel1.Controls.Add(label17);
             splitContainer3.Panel1.Controls.Add(label16);
             splitContainer3.Panel1.Controls.Add(label14);
@@ -571,12 +572,12 @@
             // 
             // splitContainer3.Panel2
             // 
-            splitContainer3.Panel2.BackColor = SystemColors.Control;
+            splitContainer3.Panel2.BackColor = Color.Gainsboro;
             splitContainer3.Panel2.Controls.Add(dgvLichSuLog);
             splitContainer3.Panel2.Controls.Add(btnXuatExcel);
             splitContainer3.Panel2.Controls.Add(label18);
             splitContainer3.Size = new Size(1890, 906);
-            splitContainer3.SplitterDistance = 746;
+            splitContainer3.SplitterDistance = 709;
             splitContainer3.TabIndex = 0;
             // 
             // btnLocLog
@@ -586,10 +587,11 @@
             btnLocLog.ForeColor = SystemColors.ButtonHighlight;
             btnLocLog.Location = new Point(33, 441);
             btnLocLog.Name = "btnLocLog";
-            btnLocLog.Size = new Size(664, 54);
+            btnLocLog.Size = new Size(641, 54);
             btnLocLog.TabIndex = 9;
             btnLocLog.Text = "Tìm kiếm (Lọc Log)";
             btnLocLog.UseVisualStyleBackColor = false;
+            btnLocLog.Click += btnLocLog_Click;
             // 
             // dtbNgayKetThuc
             // 
@@ -597,7 +599,7 @@
             dtbNgayKetThuc.Format = DateTimePickerFormat.Short;
             dtbNgayKetThuc.Location = new Point(33, 246);
             dtbNgayKetThuc.Name = "dtbNgayKetThuc";
-            dtbNgayKetThuc.Size = new Size(664, 31);
+            dtbNgayKetThuc.Size = new Size(641, 31);
             dtbNgayKetThuc.TabIndex = 2;
             // 
             // dtbNgayBatDau
@@ -606,17 +608,18 @@
             dtbNgayBatDau.Format = DateTimePickerFormat.Short;
             dtbNgayBatDau.Location = new Point(33, 147);
             dtbNgayBatDau.Name = "dtbNgayBatDau";
-            dtbNgayBatDau.Size = new Size(664, 31);
+            dtbNgayBatDau.Size = new Size(641, 31);
             dtbNgayBatDau.TabIndex = 2;
             // 
-            // txtTimUserHanhDong
+            // txtTimKiemLog
             // 
-            txtTimUserHanhDong.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            txtTimUserHanhDong.Location = new Point(33, 353);
-            txtTimUserHanhDong.Name = "txtTimUserHanhDong";
-            txtTimUserHanhDong.PlaceholderText = "Nhập từ khoá...";
-            txtTimUserHanhDong.Size = new Size(664, 34);
-            txtTimUserHanhDong.TabIndex = 2;
+            txtTimKiemLog.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtTimKiemLog.Location = new Point(33, 353);
+            txtTimKiemLog.Name = "txtTimKiemLog";
+            txtTimKiemLog.PlaceholderText = "Nhập từ khoá...";
+            txtTimKiemLog.Size = new Size(641, 34);
+            txtTimKiemLog.TabIndex = 2;
+            txtTimKiemLog.KeyDown += txtTimKiemLog_KeyDown;
             // 
             // label17
             // 
@@ -662,14 +665,14 @@
             // dgvLichSuLog
             // 
             dgvLichSuLog.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvLichSuLog.BackgroundColor = SystemColors.ButtonFace;
+            dgvLichSuLog.BackgroundColor = SystemColors.ButtonHighlight;
             dgvLichSuLog.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvLichSuLog.Columns.AddRange(new DataGridViewColumn[] { LogID, ThoiGian, User, HanhDong, BangTacDong, MoTaChiTiet });
             dgvLichSuLog.Location = new Point(22, 102);
             dgvLichSuLog.Name = "dgvLichSuLog";
             dgvLichSuLog.ReadOnly = true;
             dgvLichSuLog.RowHeadersWidth = 62;
-            dgvLichSuLog.Size = new Size(1095, 633);
+            dgvLichSuLog.Size = new Size(1131, 689);
             dgvLichSuLog.TabIndex = 1;
             // 
             // LogID
@@ -730,12 +733,13 @@
             btnXuatExcel.BackColor = Color.DarkGreen;
             btnXuatExcel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnXuatExcel.ForeColor = SystemColors.ButtonHighlight;
-            btnXuatExcel.Location = new Point(821, 813);
+            btnXuatExcel.Location = new Point(857, 807);
             btnXuatExcel.Name = "btnXuatExcel";
             btnXuatExcel.Size = new Size(296, 54);
             btnXuatExcel.TabIndex = 8;
             btnXuatExcel.Text = "Xuất file Excel (Báo cáo)";
             btnXuatExcel.UseVisualStyleBackColor = false;
+            btnXuatExcel.Click += btnXuatExcel_Click;
             // 
             // label18
             // 
@@ -761,6 +765,7 @@
             btnDong.TabIndex = 1;
             btnDong.Text = "Đóng và Quay về Trang chủ";
             btnDong.UseVisualStyleBackColor = false;
+            btnDong.Click += btnDong_Click;
             // 
             // FrmAdmin
             // 
@@ -843,7 +848,7 @@
         private Label label15;
         private DateTimePicker dtbNgayKetThuc;
         private DateTimePicker dtbNgayBatDau;
-        private TextBox txtTimUserHanhDong;
+        private TextBox txtTimKiemLog;
         private Label label17;
         private Label label16;
         private Button btnXoaTaiKhoan;

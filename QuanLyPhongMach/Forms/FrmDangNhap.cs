@@ -1,4 +1,4 @@
-﻿using System;
+﻿        using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -56,15 +56,20 @@ namespace QuanLyPhongMach.Forms
                 txtTenDangNhap.Focus();
                 return;
             }
-            //Tai khoan ADMIN co dinh
+
+            //Tài khoản ADMIN cố định (Đã xóa khối if bị lặp ở trên)
             if (username == "admin@gmail.com" && rawPassword == "admin@123")
             {
                 TaiKhoan adminUser = new TaiKhoan
                 {
+                    MaTK = 1, // Gán ID giả lập là 1 để làm dấu hiệu ghi Log cho Admin
                     TenDangNhap = "admin@gmail.com",
                     VaiTro = "ADMIN",
                     TrangThai = true
                 };
+
+                // [QUAN TRỌNG 1]: Ghi nhớ ID người dùng vào hệ thống
+                QuanLyPhongMach.Data.HeThong.MaTaiKhoanHienTai = adminUser.MaTK;
 
                 MessageBox.Show("Đăng nhập thành công với quyền Quản Trị Viên (Admin)!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -92,6 +97,9 @@ namespace QuanLyPhongMach.Forms
                             MessageBox.Show("Tài khoản đã bị khóa. Vui lòng liên hệ Quản Trị Viên!", "Tài khoản bị khoá", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
+
+                        // [QUAN TRỌNG 2]: ĐÃ BỔ SUNG Ở ĐÂY - Lưu ID của Nhân viên/Bác sĩ vào hệ thống để ghi Log
+                        QuanLyPhongMach.Data.HeThong.MaTaiKhoanHienTai = user.MaTK;
 
                         //Dang nhap thanh cong
                         //Khoi tao FrmTrangChu va truyen doi tuong user de phan quyen

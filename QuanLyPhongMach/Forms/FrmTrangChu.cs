@@ -64,6 +64,8 @@ namespace QuanLyPhongMach.Forms
 
                 mnuAdmin.Visible = true;
 
+                mnuThongKe.Visible = true;
+
                 // Mở Menu cha
                 mnuQuanLy.Visible = true;
 
@@ -91,6 +93,8 @@ namespace QuanLyPhongMach.Forms
                 mnuThongTinKhachHang.Visible = false;
 
                 mnuAdmin.Visible = false;
+
+                mnuThongKe.Visible = false;
 
                 //Ẩn Menu cha Quản lý vì Bác sĩ không xài gì trong này
                 mnuQuanLy.Visible = false;
@@ -120,6 +124,8 @@ namespace QuanLyPhongMach.Forms
 
                 mnuAdmin.Visible = false;
 
+                mnuThongKe.Visible = true;
+
                 // Ẩn Menu cha Quản lý
                 mnuQuanLy.Visible = false;
 
@@ -147,6 +153,8 @@ namespace QuanLyPhongMach.Forms
                 mnuThongTinKhachHang.Visible = true;
 
                 mnuAdmin.Visible = false;
+
+                mnuThongKe.Visible = false;
 
                 // Ẩn Menu cha Quản lý
                 mnuQuanLy.Visible = false;
@@ -313,6 +321,32 @@ namespace QuanLyPhongMach.Forms
         private void mnuAdmin_Click(object sender, EventArgs e)
         {
             MoFormAdmin();
+        }
+
+        // Hàm mở FrmThongKe (Yêu cầu quyền Admin hoặc Nhân viên)
+        private void MoFormThongKe()
+        {
+            // Kiểm tra an toàn người dùng
+            if (currentUser == null) return;
+
+            string vaiTro = currentUser.VaiTro.Trim().ToUpper();
+
+            // Chỉ Admin và Nhân viên mới có quyền vào
+            if (vaiTro.Contains("ADMIN") || vaiTro.Contains("NHAN") || vaiTro.Contains("NHÂN"))
+            {
+                FrmThongKe frmThongKe = new FrmThongKe();
+                // Nếu bạn muốn thống kê theo người dùng hiện tại, có thể truyền: new FrmThongKe(this.currentUser)
+                frmThongKe.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Bạn không có quyền truy cập vào chức năng Thống kê & Báo cáo!",
+                                "Truy cập bị từ chối", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+        }
+        private void mnuThongKe_Click(object sender, EventArgs e)
+        {
+            MoFormThongKe();
         }
     }
 }

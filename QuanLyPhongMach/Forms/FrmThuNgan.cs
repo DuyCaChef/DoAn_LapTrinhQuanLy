@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using QuanLyPhongMach.Data;
+using QuanLyPhongMach.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,10 +16,10 @@ namespace QuanLyPhongMach.Forms
     public partial class FrmThuNgan : Form
     {
 
-        private string connectionString = @"Data Source=.;Initial Catalog=QuanLyPhongMach;User ID=sa;Password=duylun2005;TrustServerCertificate=True;";
+        // private string connectionString = @"Data Source=.;Initial Catalog=QuanLyPhongMach;User ID=sa;Password=duylun2005;TrustServerCertificate=True;";
 
         // Biến lưu mã phiếu khám đang được chọn
-        private string maPhieuKhamDuocChon = "";
+        private int maPhieuKhamDuocChon = 0; // Sửa thành int để khớp với khóa chính
         private decimal tongTienHienTai = 0;
 
         public FrmThuNgan()
@@ -53,39 +55,44 @@ namespace QuanLyPhongMach.Forms
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (var db = new PhongMachDbContext())
                 {
-                    conn.Open();
+                    var query = db.PhieuKhams
+                                  .Include(pk => pk.LichKham)
+                                  .ThenInclude(lk => lk.KhachHang)
+                                  .Include(pk => pk.LichKham)
+                                  .ThenInclude(lk => lk.BacSi)
+                                  .Where(pk => !db.HoaDons.Any(hd => hd.MaPK == pk.MaPK));
 
-                    // Đã thêm JOIN qua LICHKHAM và đổi tên cột theo các class KhachHang, BacSi, PhieuKham
-                    // Dùng NOT EXISTS HOADON để xác định phiếu nào chưa được thanh toán
-                    string query = @"
-                        SELECT 
-                            ISNULL(pk.MaHienThi, 'MPK' + CAST(pk.MaPK AS NVARCHAR)) AS MaPhieuKham,    
-                            kh.TenKH AS TenBenhNhan,        
-                            bs.TenBS AS TenBacSiKham        
-                        FROM PHIEUKHAM pk
-                        JOIN LICHKHAM lk ON pk.MaLichKham = lk.MaLichKham
-                        JOIN KHACHHANG kh ON lk.MaKH = kh.MaKH
-                        JOIN BACSI bs ON lk.MaBS = bs.MaBS
-                        WHERE NOT EXISTS (SELECT 1 FROM HOADON hd WHERE hd.MaPK = pk.MaPK)
-                        AND (ISNULL(pk.MaHienThi, 'MPK' + CAST(pk.MaPK AS NVARCHAR)) LIKE @tuKhoa OR kh.TenKH LIKE @tuKhoa)";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    if (!string.IsNullOrEmpty(tuKhoa))
                     {
-                        cmd.Parameters.AddWithValue("@tuKhoa", "%" + tuKhoa + "%");
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            adapter.Fill(dt);
-                            dgvChiTietPhieuKham.DataSource = dt;
-                        }
+                        query = query.Where(pk => pk.MaHienThi.Contains(tuKhoa) || pk.LichKham.KhachHang.TenKH.Contains(tuKhoa));
                     }
+
+                    var danhSach = query.Select(pk => new
+                    {
+                        MaPK = pk.MaPK, // ID thật để xử lý
+                        MaPhieuKham = pk.MaHienThi,
+                        TenBenhNhan = pk.LichKham.KhachHang.TenKH,
+                        TenBacSiKham = pk.LichKham.BacSi.TenBS
+                    }).ToList();
+
+                    // Tắt AutoGenerateColumns để đảm bảo các cột thiết kế được sử dụng
+                    dgvChiTietPhieuKham.AutoGenerateColumns = false;
+                    dgvChiTietPhieuKham.DataSource = danhSach;
+
+                    // Ánh xạ dữ liệu vào các cột đã thiết kế
+                    // Giả sử tên các cột trong Designer là: colMaPhieuKham, colTenBenhNhan, colTenBacSi
+                    // Nếu tên khác, bạn cần đổi lại cho đúng
+                    dgvChiTietPhieuKham.Columns["MaPhieuKham"].DataPropertyName = "MaPhieuKham";
+                    dgvChiTietPhieuKham.Columns["TenBenhNhan"].DataPropertyName = "TenBenhNhan";
+                    dgvChiTietPhieuKham.Columns["TenBacSiKham"].DataPropertyName = "TenBacSiKham";
+
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Vui lòng mở file PhieuKham.cs, KhachHang.cs để xem lại tên cột và sửa vào SQL!\nChi tiết: " + ex.Message, "Sai tên cột Database", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi tải danh sách phiếu khám: " + ex.Message, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -100,82 +107,53 @@ namespace QuanLyPhongMach.Forms
         {
             if (e.RowIndex >= 0)
             {
-                DataGridViewRow row = dgvChiTietPhieuKham.Rows[e.RowIndex];
+                // Lấy toàn bộ đối tượng dữ liệu của dòng được chọn
+                var selectedRowData = dgvChiTietPhieuKham.Rows[e.RowIndex].DataBoundItem;
+                if (selectedRowData != null)
+                {
+                    // Lấy giá trị MaPK và TenBenhNhan một cách an toàn bằng reflection
+                    int maPK = (int)selectedRowData.GetType().GetProperty("MaPK").GetValue(selectedRowData, null);
+                    string tenBN = selectedRowData.GetType().GetProperty("TenBenhNhan").GetValue(selectedRowData, null)?.ToString();
 
-                // Lấy mã hiển thị (Ví dụ: "MPK15")
-                string maHienThi = row.Cells["MaPhieuKham"].Value.ToString();
-
-                // Phải cắt bỏ chữ MPK để lấy lại số nguyên gốc truyền vào SQL
-                maPhieuKhamDuocChon = maHienThi.Replace("MPK", "");
-
-                txtBenhNhan.Text = row.Cells["TenBenhNhan"].Value.ToString();
-
-                // Truyền con số (VD: "15") vào hàm Load chi tiết
-                LoadChiTietDichVuVaThuoc(maPhieuKhamDuocChon);
+                    maPhieuKhamDuocChon = maPK;
+                    txtBenhNhan.Text = tenBN;
+                    LoadChiTietDichVuVaThuoc(maPhieuKhamDuocChon);
+                }
             }
         }
 
         // 4. HÀM LOAD CHI TIẾT VÀO BẢNG PHẢI (Gộp cả dịch vụ và thuốc)
-        private void LoadChiTietDichVuVaThuoc(string maPhieuKham)
+        private void LoadChiTietDichVuVaThuoc(int maPhieuKham)
         {
             dgvChiTietDichVu.Rows.Clear();
             tongTienHienTai = 0;
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (var db = new PhongMachDbContext())
                 {
-                    conn.Open();
-
                     // --- BƯỚC A: LẤY DANH SÁCH DỊCH VỤ ---
-                    // Đã lấy thêm cột SoLuong từ bảng ChiTietDichVu để tính đúng tổng tiền
-                    string queryDichVu = @"
-                        SELECT dv.TenDichVu, ctdv.SoLuong, dv.DonGia 
-                        FROM CHITIET_DICHVU ctdv
-                        JOIN DICHVU dv ON ctdv.MaDV = dv.MaDV
-                        WHERE ctdv.MaPK = @MaPK";
+                    var chiTietDV = db.ChiTietDichVus
+                                      .Include(ct => ct.DichVu)
+                                      .Where(ct => ct.MaPK == maPhieuKham)
+                                      .ToList();
 
-                    using (SqlCommand cmd = new SqlCommand(queryDichVu, conn))
+                    foreach (var item in chiTietDV)
                     {
-                        cmd.Parameters.AddWithValue("@MaPK", maPhieuKham);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                string tenDV = reader["TenDichVu"].ToString();
-                                int soLuongDV = Convert.ToInt32(reader["SoLuong"]);
-                                decimal donGia = Convert.ToDecimal(reader["DonGia"]);
-
-                                // Đã map đúng vị trí: Dịch vụ (0), Đơn giá (1)
-                                dgvChiTietDichVu.Rows.Add(tenDV, donGia.ToString("N0"), "", "", "");
-                                tongTienHienTai += (soLuongDV * donGia);
-                            }
-                        }
+                        dgvChiTietDichVu.Rows.Add(item.DichVu.TenDichVu, item.DichVu.DonGia.ToString("N0"), "", "", "");
+                        tongTienHienTai += (item.SoLuong * item.DichVu.DonGia);
                     }
 
                     // --- BƯỚC B: LẤY DANH SÁCH ĐƠN THUỐC ---
-                    string queryThuoc = @"
-                        SELECT t.TenThuoc, ctt.SoLuong, t.DonGia 
-                        FROM CHITIET_DONTHUOC ctt
-                        JOIN THUOC t ON ctt.MaThuoc = t.MaThuoc
-                        WHERE ctt.MaPK = @MaPK";
+                    var chiTietThuoc = db.ChiTietDonThuocs
+                                         .Include(ct => ct.Thuoc)
+                                         .Where(ct => ct.MaPK == maPhieuKham)
+                                         .ToList();
 
-                    using (SqlCommand cmd = new SqlCommand(queryThuoc, conn))
+                    foreach (var item in chiTietThuoc)
                     {
-                        cmd.Parameters.AddWithValue("@MaPK", maPhieuKham);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                string tenThuoc = reader["TenThuoc"].ToString();
-                                int soLuong = Convert.ToInt32(reader["SoLuong"]);
-                                decimal donGiaThuoc = Convert.ToDecimal(reader["DonGia"]);
-
-                                // Đã map đúng vị trí: Thuốc (2), SL (3), Đơn giá (4)
-                                dgvChiTietDichVu.Rows.Add("", "", tenThuoc, soLuong, donGiaThuoc.ToString("N0"));
-                                tongTienHienTai += (soLuong * donGiaThuoc);
-                            }
-                        }
+                        dgvChiTietDichVu.Rows.Add("", "", item.Thuoc.TenThuoc, item.SoLuong, item.Thuoc.DonGia.ToString("N0"));
+                        tongTienHienTai += (item.SoLuong * item.Thuoc.DonGia);
                     }
 
                     lblTongTien.Text = tongTienHienTai.ToString("N0") + " VNĐ";
@@ -183,14 +161,14 @@ namespace QuanLyPhongMach.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải chi tiết: " + ex.Message);
+                MessageBox.Show("Lỗi khi tải chi tiết: " + ex.Message, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         // 5. XỬ LÝ NÚT XÁC NHẬN THANH TOÁN
         private void btnXacNhanThanhToan_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(maPhieuKhamDuocChon))
+            if (string.IsNullOrEmpty(maPhieuKhamDuocChon.ToString()) || maPhieuKhamDuocChon == 0)
             {
                 MessageBox.Show("Vui lòng chọn một phiếu khám để thanh toán!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -202,21 +180,19 @@ namespace QuanLyPhongMach.Forms
             {
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (var db = new PhongMachDbContext())
                     {
-                        conn.Open();
-
-                        // Xóa UPDATE PhieuKham vì bảng này không có cột TrangThai.
-                        // Sửa lại INSERT HOADON chuẩn xác với thuộc tính trong HoaDon.cs (loại bỏ GhiChu)
-                        string insertHoaDon = @"INSERT INTO HOADON (MaPK, TongTien, PhuongThucThanhToan, TrangThaiThanhToan, NgayThanhToan) 
-                                                VALUES (@MaPK, @TongTien, @HinhThuc, N'Đã thanh toán', GETDATE())";
-                        using (SqlCommand cmdInsert = new SqlCommand(insertHoaDon, conn))
+                        var hoaDonMoi = new HoaDon
                         {
-                            cmdInsert.Parameters.AddWithValue("@MaPK", maPhieuKhamDuocChon);
-                            cmdInsert.Parameters.AddWithValue("@TongTien", tongTienHienTai);
-                            cmdInsert.Parameters.AddWithValue("@HinhThuc", cboHinhThuc.SelectedItem?.ToString() ?? "Tiền mặt");
-                            cmdInsert.ExecuteNonQuery();
-                        }
+                            MaPK = maPhieuKhamDuocChon,
+                            TongTien = tongTienHienTai,
+                            PhuongThucThanhToan = cboHinhThuc.SelectedItem?.ToString() ?? "Tiền mặt",
+                            TrangThaiThanhToan = "Đã thanh toán",
+                            NgayThanhToan = DateTime.Now
+                        };
+
+                        db.HoaDons.Add(hoaDonMoi);
+                        db.SaveChanges();
 
                         // =========================================================================
                         //Thay thế MessageBox thông báo đơn thuần bằng DialogResult hỏi In hoá đơn
@@ -232,7 +208,7 @@ namespace QuanLyPhongMach.Forms
                         }
 
                         // Dọn dẹp màn hình sau khi thanh toán
-                        maPhieuKhamDuocChon = "";
+                        maPhieuKhamDuocChon = 0;
                         txtBenhNhan.Text = "";
                         txtGhiChu.Text = "";
                         lblTongTien.Text = "0 VNĐ";
@@ -244,7 +220,7 @@ namespace QuanLyPhongMach.Forms
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Lỗi khi thanh toán: " + ex.Message);
+                    MessageBox.Show("Lỗi khi thanh toán: " + ex.Message, "Lỗi Hệ Thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

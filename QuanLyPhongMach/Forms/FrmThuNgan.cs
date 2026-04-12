@@ -198,13 +198,15 @@ namespace QuanLyPhongMach.Forms
                         //Thay thế MessageBox thông báo đơn thuần bằng DialogResult hỏi In hoá đơn
                         // =========================================================================
                         DialogResult printDialog = MessageBox.Show("Thanh toán thành công!\nBạn có muốn in hoá đơn cho bệnh nhân này không?",
-                                                                   "In hoá đơn",
-                                                                   MessageBoxButtons.YesNo,
-                                                                   MessageBoxIcon.Question);
+                                                                   "In hoá đơn", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (printDialog == DialogResult.Yes)
                         {
-                            // Sau này nếu muốn làm in thật bằng PrintDocument, bạn viết code in ở đây
-                            MessageBox.Show("In hoá đơn thành công!", "Hệ thống máy in", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            // Lấy chính xác Mã Hóa Đơn (MaHD) vừa được EF Core tự tạo
+                            int maHoaDonVuaTao = hoaDonMoi.MaHD;
+
+                            // Truyền sang Form In
+                            FrmInHoaDon frmIn = new FrmInHoaDon(maHoaDonVuaTao);
+                            frmIn.ShowDialog();
                         }
 
                         // Dọn dẹp màn hình sau khi thanh toán

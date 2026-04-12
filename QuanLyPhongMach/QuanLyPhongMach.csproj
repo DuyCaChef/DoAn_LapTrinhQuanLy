@@ -27,11 +27,17 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="ReportViewerCore.WinForms" Version="15.1.33" />
 
 		<PackageReference Include="WinForms.DataVisualization" Version="1.10.0" />
 	</ItemGroup>
 
   <ItemGroup>
+    <Compile Update="dsHoaDon.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>dsHoaDon.xsd</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -44,6 +50,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="dsHoaDon.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsHoaDon.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Reports\rptInHoaDon.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

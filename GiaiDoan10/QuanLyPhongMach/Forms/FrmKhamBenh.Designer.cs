@@ -410,7 +410,7 @@
             txtLoiDan.Location = new Point(21, 378);
             txtLoiDan.Name = "txtLoiDan";
             txtLoiDan.Size = new Size(1079, 93);
-            txtLoiDan.TabIndex = 3;
+            txtLoiDan.TabIndex = 4;
             txtLoiDan.Text = "";
             // 
             // txtChanDoan

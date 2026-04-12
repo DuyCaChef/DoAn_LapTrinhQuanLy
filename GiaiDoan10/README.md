@@ -72,6 +72,12 @@
 
 ### Giai đoạn 10: Tổng kết, kiểm thử và hoàn thiện sản phẩm
 
-**Tổng quan & Mô tả:** Tổng hợp, kiểm thử toàn bộ hệ thống, hoàn thiện tài liệu, chuẩn hóa mã nguồn, tối ưu hiệu năng và bảo mật trước khi bàn giao.
-**Tính năng chính:** Kiểm thử tích hợp, sửa lỗi tổng thể, bổ sung/tối ưu báo cáo, hoàn thiện tài liệu hướng dẫn sử dụng và triển khai, chuẩn hóa giao diện và trải nghiệm người dùng.
-**Khó khăn & Kinh nghiệm:** Phát hiện lỗi tiềm ẩn khi tích hợp nhiều module, xử lý nợ kỹ thuật (warning, refactor), tối ưu hiệu năng, chuẩn hóa bảo mật, hoàn thiện tài liệu và checklist bàn giao.
+**Tổng quan & Mô tả:** Tổng hợp, kiểm thử toàn bộ hệ thống, hoàn thiện tài liệu, chuẩn hóa mã nguồn, tối ưu hiệu năng và bảo mật trước khi bàn giao. Bổ sung quy trình xuất hóa đơn với form in hóa đơn chuyên biệt.
+**Tính năng chính:**
+
+- Thêm form `FrmInHoaDon` sử dụng biểu mẫu hóa đơn được tạo bằng report.
+- Sau khi thu ngân xác nhận hóa đơn và chọn xuất hóa đơn, hệ thống tự động mở `FrmInHoaDon` để xem/in hóa đơn.
+- Kiểm thử tích hợp, sửa lỗi tổng thể, bổ sung/tối ưu báo cáo, hoàn thiện tài liệu hướng dẫn sử dụng và triển khai, chuẩn hóa giao diện và trải nghiệm người dùng.
+  **Khó khăn & Kinh nghiệm:**
+- Xử lý luồng xuất hóa đơn đồng bộ với nghiệp vụ thu ngân.
+- Đảm bảo tính chính xác của dữ liệu trên report hóa đơn.
